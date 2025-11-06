@@ -130,9 +130,38 @@ const ChartIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
-const SparklesIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m1-12a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1h-6a1 1 0 01-1-1V6zM17.657 17.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+const UrboIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    {/* Head */}
+    <rect x="7" y="4" width="10" height="8" rx="1.5" />
+    {/* Antenna */}
+    <line x1="12" y1="4" x2="12" y2="2" />
+    <circle cx="12" cy="1.5" r="0.5" fill="currentColor" />
+    {/* Eyes */}
+    <circle cx="10" cy="8" r="0.5" fill="currentColor" />
+    <circle cx="14" cy="8" r="0.5" fill="currentColor" />
+    {/* Mouth */}
+    <path d="M10 10 C 11 11, 13 11, 14 10" />
+    {/* Body */}
+    <rect x="6" y="13" width="12" height="7" rx="1.5" />
+    {/* Button on body */}
+    <circle cx="12" cy="16.5" r="1.5" />
+    {/* Waving arm */}
+    <path d="M6 15 C 3.5 15 3 12 5 11" />
+    {/* Other arm */}
+    <path d="M18 15 V 17" />
+    {/* Feet */}
+    <path d="M8 20v1.5a1 1 0 0 0 2 0V20" />
+    <path d="M14 20v1.5a1 1 0 0 0 2 0V20" />
   </svg>
 );
 
@@ -177,7 +206,7 @@ const Sidebar: React.FC<{ activePage: Page, setPage: (page: Page) => void, onOpe
             onClick={onOpenChat}
             className="flex items-center w-full text-left p-3 rounded-lg transition-colors duration-200 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700"
           >
-            <SparklesIcon className="h-5 w-5 text-fuchsia-500" />
+            <UrboIcon className="h-6 w-6 text-green-600 dark:text-green-500" />
             <span className="ml-3 font-semibold">Ask Urbo</span>
          </button>
       </div>
@@ -199,12 +228,6 @@ const App: React.FC = () => {
   const [isChatLoading, setIsChatLoading] = useState<boolean>(false);
 
   const fetchData = useCallback(async (loc: string) => {
-    // For intro page, we don't need to fetch data
-    if (page === 'intro' && data) {
-      setIsLoading(false);
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
     setData(null); // Clear old data to prevent showing stale info
@@ -217,7 +240,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [page, data]);
+  }, []);
 
   useEffect(() => {
     // Only fetch data if on analysis page. Intro page is static.
