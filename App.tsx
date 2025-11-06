@@ -12,18 +12,6 @@ import PredictedHotspots from './components/PredictedHotspots';
 import ChatModal from './components/ChatModal';
 import type { Content } from '@google/genai';
 
-// This helps TypeScript understand the custom window object that may be injected by the environment.
-// FIX: Consolidate the 'AIStudio' interface declaration into the 'declare global' block to resolve a TypeScript type conflict error.
-declare global {
-  interface AIStudio {
-    hasSelectedApiKey: () => Promise<boolean>;
-    openSelectKey: () => Promise<void>;
-  }
-  interface Window {
-    aistudio?: AIStudio;
-  }
-}
-
 const urbanSprawlFactors = [
   "Population growth",
   "Economic indicators (job growth, income levels)",
@@ -200,36 +188,13 @@ const Sidebar: React.FC<{ activePage: Page, setPage: (page: Page) => void, onOpe
 
 const App: React.FC = () => {
   const [data, setData] = useState<GtaPopulationData | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [location, setLocation] = useState<string>('Greater Toronto Area');
   const [page, setPage] = useState<Page>('intro');
-  const [hasApiKey, setHasApiKey] = useState<boolean | null>(null);
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [isChatLoading, setIsChatLoading] = useState<boolean>(false);
-
-  const checkApiKey = useCallback(async () => {
-    if (window.aistudio) {
-      setHasApiKey(await window.aistudio.hasSelectedApiKey());
-    } else {
-      console.warn('window.aistudio not found. Assuming API key is set via environment variables.');
-      setHasApiKey(true); // Fallback for environments without the aistudio object
-    }
-  }, []);
-
-  useEffect(() => {
-    checkApiKey();
-  }, [checkApiKey]);
-
-  const handleSelectKey = useCallback(async () => {
-    if (window.aistudio) {
-      await window.aistudio.openSelectKey();
-      // Assume the user selected a key. The app will now re-render and try to fetch data.
-      setHasApiKey(true);
-      setError(null); // Clear previous errors
-    }
-  }, []);
 
   const fetchData = useCallback(async (loc: string) => {
     setIsLoading(true);
@@ -239,12 +204,7 @@ const App: React.FC = () => {
       const result = await fetchGtaPopulationInfo(loc);
       setData(result);
     } catch (err) {
-      if (err instanceof Error && err.message.includes('API key selection needed')) {
-        // The service layer determined the key is invalid, so we prompt for selection again.
-        setHasApiKey(false);
-      } else {
-        setError(err instanceof Error ? err.message : 'An unknown error occurred.');
-      }
+      setError(err instanceof Error ? err.message : 'An unknown error occurred.');
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -252,11 +212,8 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Only fetch data if we have an API key.
-    if (hasApiKey) {
-      fetchData(location);
-    }
-  }, [location, hasApiKey, fetchData]);
+    fetchData(location);
+  }, [location, fetchData]);
 
   const handleSendMessage = useCallback(async (message: string) => {
     setIsChatLoading(true);
@@ -279,36 +236,6 @@ const App: React.FC = () => {
       setIsChatLoading(false);
     }
   }, [chatMessages]);
-
-  if (hasApiKey === null) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    );
-  }
-
-  if (hasApiKey === false) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 text-center border border-gray-200 dark:border-slate-700">
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-4">API Key Required</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            To use this application, please select a Google AI API key. This key is used to authenticate your requests.
-          </p>
-          <button
-            onClick={handleSelectKey}
-            className="w-full px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-300"
-          >
-            Select API Key
-          </button>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-4">
-            For more information, see the <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-500">billing documentation</a>.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-200 font-sans transition-colors duration-500">

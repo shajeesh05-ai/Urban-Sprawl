@@ -116,17 +116,13 @@ export async function fetchGtaPopulationInfo(location: string): Promise<GtaPopul
   } catch (error) {
     console.error("Error in Gemini API service:", error);
     if (error instanceof Error) {
-        // This specific error indicates the selected API key is invalid or has been revoked.
-        if (error.message.includes('Requested entity was not found')) {
-            throw new Error('API key selection needed. The provided key may be invalid.');
-        }
-        // This error is from the client-side SDK if the key is missing entirely.
-        if (error.message.includes('API Key must be set')) {
-             throw new Error("API key selection needed. Please select a key to continue.");
-        }
-        // A more generic "invalid key" message from the backend.
-        if (error.message.includes('API key not valid')) {
-            throw new Error("The provided API key is not valid. Please select another key.");
+        // Check for common API key-related errors and provide a user-friendly message.
+        if (
+            error.message.includes('API key not valid') ||
+            error.message.includes('API Key must be set') ||
+            error.message.includes('Requested entity was not found')
+        ) {
+            throw new Error("The API key is invalid or missing. Please ensure it is configured correctly in your environment.");
         }
     }
     // Generic fallback for network errors, etc.
