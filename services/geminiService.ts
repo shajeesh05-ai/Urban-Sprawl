@@ -1,9 +1,8 @@
-import { GoogleGenAI, Type } from "@google/genai";
+
+import { GoogleGenAI, Type, Content } from "@google/genai";
 import type { GtaPopulationData } from '../types';
 
 export async function fetchGtaPopulationInfo(location: string): Promise<GtaPopulationData> {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
   const prompt = `
     Act as an expert urban planning analyst for the Greater Toronto Area.
     Based on the provided context about predicting urban sprawl, generate a detailed analysis for ${location}. If the location is 'Greater Toronto Area', provide data for the entire region.
@@ -29,8 +28,9 @@ export async function fetchGtaPopulationInfo(location: string): Promise<GtaPopul
   `;
   
   try {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.5-pro",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -114,7 +114,47 @@ export async function fetchGtaPopulationInfo(location: string): Promise<GtaPopul
     return parsedData;
 
   } catch (error) {
-    console.error("Error fetching data from Gemini API:", error);
-    throw new Error("Failed to retrieve population data. The API may be unavailable or the request failed. Please ensure your API key is configured correctly in the environment settings.");
+    console.error("Error in Gemini API service:", error);
+    if (error instanceof Error) {
+        // This specific error indicates the selected API key is invalid or has been revoked.
+        if (error.message.includes('Requested entity was not found')) {
+            throw new Error('API key selection needed. The provided key may be invalid.');
+        }
+        // This error is from the client-side SDK if the key is missing entirely.
+        if (error.message.includes('API Key must be set')) {
+             throw new Error("API key selection needed. Please select a key to continue.");
+        }
+        // A more generic "invalid key" message from the backend.
+        if (error.message.includes('API key not valid')) {
+            throw new Error("The provided API key is not valid. Please select another key.");
+        }
+    }
+    // Generic fallback for network errors, etc.
+    throw new Error("Failed to retrieve population data due to a network or API error. Please try again.");
+  }
+}
+
+export async function askChatbot(question: string, history: Content[]): Promise<string> {
+  try {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    
+    const contents: Content[] = [
+      ...history,
+      { role: 'user', parts: [{ text: question }] }
+    ];
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-pro",
+      contents: contents,
+      config: {
+        systemInstruction: "You are Urbo, a helpful AI assistant powered by Google Gemini. You specialize in the Greater Toronto Area's population growth, infrastructure, and urban planning, based on data presented in this application. Answer the user's questions concisely and stay strictly on the topic of GTA growth. If a question is off-topic, politely decline to answer and guide the user back to the relevant subject.",
+      }
+    });
+
+    return response.text;
+  } catch (error) {
+    console.error("Error in chatbot service:", error);
+    // Re-throw a user-friendly error
+    throw new Error("Sorry, I couldn't get a response from the AI. Please try again.");
   }
 }
