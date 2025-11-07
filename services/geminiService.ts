@@ -1,6 +1,8 @@
-
 import { GoogleGenAI, Type, Content } from "@google/genai";
 import type { GtaPopulationData } from '../types';
+
+// Fix: Per coding guidelines, API key is sourced directly from process.env.API_KEY during initialization.
+// The API key is assumed to be pre-configured and available in the execution context.
 
 export async function fetchGtaPopulationInfo(location: string): Promise<GtaPopulationData> {
   const prompt = `
@@ -13,8 +15,9 @@ export async function fetchGtaPopulationInfo(location: string): Promise<GtaPopul
     Your analysis must include:
     1.  A main title for the page, specific to ${location}.
     2.  Historical population data for the last 5 years and projected data for the next 5 years for a chart. For each year, provide the year, population, and whether the data is 'historical' or 'projected'.
-    3.  Exactly 3 predictions about the future of urban sprawl in ${location}, based on the context provided. Each prediction needs a short, insightful title and a detailed description (around 40-50 words).
-    4.  Exactly 3 predicted growth hotspots for the next 10 years. These predictions must be hyper-realistic and well-founded. Crucially, they must be STRICTLY WITHIN the geographical boundaries of ${location}. Do not suggest locations in adjacent municipalities. For each hotspot, provide:
+    3.  A concise, natural-language summary (around 30-40 words) of the population trend data, highlighting key takeaways.
+    4.  Exactly 3 predictions about the future of urban sprawl in ${location}, based on the context provided. Each prediction needs a short, insightful title and a detailed description (around 40-50 words).
+    5.  Exactly 3 predicted growth hotspots for the next 10 years. These predictions must be hyper-realistic and well-founded. Crucially, they must be STRICTLY WITHIN the geographical boundaries of ${location}. Do not suggest locations in adjacent municipalities. For each hotspot, provide:
         - 'name': A human-readable name for the area (e.g., "East Harbour").
         - 'locationQuery': A highly specific, Google Maps-searchable string for the location (e.g., "East Harbour, Toronto, ON" or "Don Roadway and Lake Shore Boulevard East, Toronto"). This is critical for map accuracy.
         - 'reason': A detailed explanation of why this specific area will experience significant growth. Your reasoning MUST be grounded in the principles from the 'Context on Urban Sprawl Prediction' provided above. Explicitly consider factors like local zoning laws, political initiatives, major transit projects (like new subway lines), housing availability/affordability, and the potential for redevelopment of underutilized land.
@@ -23,6 +26,7 @@ export async function fetchGtaPopulationInfo(location: string): Promise<GtaPopul
   `;
   
   try {
+    // Fix: Per coding guidelines, initialize GoogleGenAI directly with process.env.API_KEY.
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: "gemini-2.5-pro",
@@ -48,6 +52,10 @@ export async function fetchGtaPopulationInfo(location: string): Promise<GtaPopul
                 },
                 required: ["year", "population", "type"]
               }
+            },
+            populationTrendSummary: {
+              type: Type.STRING,
+              description: "A concise summary of the population trend."
             },
             urbanSprawlPredictions: {
               type: Type.ARRAY,
@@ -75,7 +83,7 @@ export async function fetchGtaPopulationInfo(location: string): Promise<GtaPopul
               }
             }
           },
-          required: ["title", "populationTrend", "urbanSprawlPredictions", "predictedHotspots"]
+          required: ["title", "populationTrend", "populationTrendSummary", "urbanSprawlPredictions", "predictedHotspots"]
         }
       }
     });
@@ -111,6 +119,7 @@ export async function fetchGtaPopulationInfo(location: string): Promise<GtaPopul
 
 export async function askChatbot(question: string, history: Content[]): Promise<string> {
   try {
+    // Fix: Per coding guidelines, initialize GoogleGenAI directly with process.env.API_KEY.
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     const contents: Content[] = [

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { fetchGtaPopulationInfo, askChatbot } from './services/geminiService';
-import type { GtaPopulationData } from './types';
+import type { GtaPopulationData, PredictedHotspot } from './types';
 import Header from './components/Header';
 import LoadingSpinner from './components/LoadingSpinner';
 import ErrorDisplay from './components/ErrorDisplay';
@@ -181,7 +181,7 @@ const AnalysisPage: React.FC<{
 
     return (
     <div className="space-y-8 animate-fade-in">
-      <GtaMap location={mapLocation} onLocationChange={onPrimaryLocationChange} />
+      <GtaMap location={mapLocation} onLocationChange={onPrimaryLocationChange} hotspots={data.predictedHotspots} />
 
       {isViewingHotspot && (
         <div className="text-center -mt-4 mb-4">
@@ -203,6 +203,16 @@ const AnalysisPage: React.FC<{
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white mb-6 text-center">
             Population Trend for {primaryLocation}
           </h2>
+
+          {data.populationTrendSummary && (
+            <div className="flex items-start gap-4 p-4 mb-6 bg-teal-50 dark:bg-teal-900/30 border-l-4 border-teal-400 rounded-r-lg animate-fade-in-up">
+              <InsightIcon className="w-6 h-6 text-teal-500 dark:text-teal-400 flex-shrink-0 mt-1" />
+              <p className="text-gray-700 dark:text-gray-300">
+                {data.populationTrendSummary}
+              </p>
+            </div>
+          )}
+
           <div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700">
             <PopulationChart data={data.populationTrend} />
           </div>
@@ -289,6 +299,14 @@ const PublicHealthIcon: React.FC<{ className?: string }> = ({ className }) => (
     <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0 7.22-9 12.75-9 12.75s-9-5.53-9-12.75A9 9 0 0112 3a9 9 0 019 5.25z" />
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9" />
   </svg>
+);
+
+const InsightIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 5.25a2.25 2.25 0 002.25-2.25H9.75a2.25 2.25 0 002.25 2.25z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v.75m6.364 1.89l-1.06 1.06M21 12h-.75M17.45 17.45l-1.06-1.06M12 21v-.75m-6.364-1.89l1.06-1.06M3 12h.75m1.54-5.54l1.06 1.06" />
+    </svg>
 );
 
 

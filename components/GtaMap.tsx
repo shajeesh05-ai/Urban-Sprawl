@@ -1,5 +1,5 @@
-
 import React, { useState, useMemo } from 'react';
+import type { PredictedHotspot } from '../types';
 
 const majorGtaCities = [
   'Toronto',
@@ -14,10 +14,16 @@ const majorGtaCities = [
 interface GtaMapProps {
   location: string;
   onLocationChange: (newLocation: string) => void;
+  hotspots: PredictedHotspot[];
 }
 
-const GtaMap: React.FC<GtaMapProps> = ({ location, onLocationChange }) => {
+const GtaMap: React.FC<GtaMapProps> = ({ location, onLocationChange, hotspots }) => {
   const [inputValue, setInputValue] = useState('');
+
+  const selectedHotspot = useMemo(
+    () => hotspots?.find(h => h.locationQuery === location),
+    [hotspots, location]
+  );
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,7 +48,7 @@ const GtaMap: React.FC<GtaMapProps> = ({ location, onLocationChange }) => {
       return 12;
     }
     // Assume any other query is a specific address or hotspot
-    return 14;
+    return 15;
   }, [location]);
 
   const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(location)}&output=embed&z=${zoomLevel}`;
@@ -89,7 +95,7 @@ const GtaMap: React.FC<GtaMapProps> = ({ location, onLocationChange }) => {
         </div>
       </div>
 
-      <div className="rounded-lg overflow-hidden border dark:border-slate-600">
+      <div className="relative rounded-lg overflow-hidden border dark:border-slate-600">
         <iframe
           key={location} // Using key to force re-render on query change
           src={mapSrc}
@@ -100,7 +106,26 @@ const GtaMap: React.FC<GtaMapProps> = ({ location, onLocationChange }) => {
           referrerPolicy="no-referrer-when-downgrade"
           title={`Map of ${location}`}
         ></iframe>
+        {selectedHotspot && (
+          // This overlay locks the map and displays the growth hotspot indicator
+          <div className="absolute inset-0 flex items-center justify-center bg-transparent" aria-hidden="true">
+            <div className="relative w-80 h-80 md:w-96 md:h-96 animate-fade-in">
+              {/* Pulsating outer circle */}
+              <div className="absolute inset-0 rounded-full bg-red-500/20 animate-ping-slow"></div>
+              {/* Static inner circle/border */}
+              <div className="absolute inset-0 rounded-full border border-red-500/40"></div>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Hotspot information displayed below the map */}
+      {selectedHotspot && (
+        <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-gray-200 dark:border-slate-600 animate-fade-in">
+          <h3 className="font-bold text-lg mb-2 text-amber-500 dark:text-amber-400">{selectedHotspot.name}</h3>
+          <p className="text-sm text-gray-700 dark:text-gray-300">{selectedHotspot.reason}</p>
+        </div>
+      )}
     </section>
   );
 };

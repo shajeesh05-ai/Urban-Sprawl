@@ -19,6 +19,7 @@ export interface PredictedHotspot {
 export interface GtaPopulationData {
   title: string;
   populationTrend: PopulationDataPoint[];
+  populationTrendSummary: string;
   urbanSprawlPredictions: UrbanSprawlPrediction[];
   predictedHotspots: PredictedHotspot[];
 }
