@@ -74,21 +74,134 @@ const IntroPage: React.FC = () => (
         </div>
       </div>
     </section>
+
+    <section className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700">
+      <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white mb-8 text-center">
+        Who is Urbis For?
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="flex items-start space-x-4">
+          <div className="flex-shrink-0 bg-teal-100 dark:bg-teal-900/50 p-3 rounded-full">
+            <CityPlannerIcon className="h-7 w-7 text-teal-500 dark:text-teal-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">City Planners</h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm leading-6">
+              Utilize our predictive models to anticipate growth areas, optimize infrastructure planning, and create more sustainable urban environments. Make data-driven decisions on zoning, transportation, and public services.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-start space-x-4">
+          <div className="flex-shrink-0 bg-blue-100 dark:bg-blue-900/50 p-3 rounded-full">
+            <GovOfficialIcon className="h-7 w-7 text-blue-500 dark:text-blue-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">Government Officials</h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm leading-6">
+              Gain insights into demographic shifts and development trends to inform public policy, allocate resources effectively, and address the evolving needs of your communities for long-term strategic planning.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-start space-x-4">
+          <div className="flex-shrink-0 bg-indigo-100 dark:bg-indigo-900/50 p-3 rounded-full">
+            <HomeownerIcon className="h-7 w-7 text-indigo-500 dark:text-indigo-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">Future Homeowners</h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm leading-6">
+              Discover up-and-coming neighborhoods with high growth potential. Make informed decisions about one of life's biggest investments by understanding the future development landscape of your potential new community.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-start space-x-4">
+          <div className="flex-shrink-0 bg-amber-100 dark:bg-amber-900/50 p-3 rounded-full">
+            <InvestorIcon className="h-7 w-7 text-amber-500 dark:text-amber-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">Real Estate Investors</h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm leading-6">
+              Identify high-yield investment opportunities before they become mainstream. Leverage our growth hotspot predictions to guide your portfolio strategy and maximize returns in the dynamic real estate market.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700">
+      <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white mb-8 text-center">
+        Specialized & Niche Applications
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="flex items-start space-x-4">
+          <div className="flex-shrink-0 bg-green-100 dark:bg-green-900/50 p-3 rounded-full">
+            <EnvironmentalIcon className="h-7 w-7 text-green-500 dark:text-green-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">Environmental Scientists</h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm leading-6">
+              Model the ecological impact of urban expansion. Use growth forecasts to identify at-risk habitats, predict water pattern changes, and advocate for preserving green spaces.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-start space-x-4">
+          <div className="flex-shrink-0 bg-red-100 dark:bg-red-900/50 p-3 rounded-full">
+            <InsuranceIcon className="h-7 w-7 text-red-500 dark:text-red-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">Insurance Analysts</h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm leading-6">
+             Assess property risk by modeling exposure to climate-related events like flooding in newly populated zones based on development predictions.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-start space-x-4">
+           <div className="flex-shrink-0 bg-purple-100 dark:bg-purple-900/50 p-3 rounded-full">
+            <PublicHealthIcon className="h-7 w-7 text-purple-500 dark:text-purple-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">Public Health Officials</h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm leading-6">
+              Plan for future healthcare needs by projecting demand for hospitals and emergency services in growth areas, ensuring timely access to care for expanding communities.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 );
 
-const AnalysisPage: React.FC<{ data: GtaPopulationData, location: string, onLocationChange: (loc: string) => void }> = ({ data, location, onLocationChange }) => (
+const AnalysisPage: React.FC<{
+  data: GtaPopulationData;
+  primaryLocation: string;
+  mapLocation: string;
+  onPrimaryLocationChange: (loc: string) => void;
+  onMapLocationChange: (loc: string) => void;
+}> = ({ data, primaryLocation, mapLocation, onPrimaryLocationChange, onMapLocationChange }) => {
+    const isViewingHotspot = primaryLocation !== mapLocation;
+
+    return (
     <div className="space-y-8 animate-fade-in">
-      <GtaMap location={location} onLocationChange={onLocationChange} />
-      
-      {data.predictedHotspots && data.predictedHotspots.length > 0 && (
-        <PredictedHotspots hotspots={data.predictedHotspots} onViewHotspot={onLocationChange} />
+      <GtaMap location={mapLocation} onLocationChange={onPrimaryLocationChange} />
+
+      {isViewingHotspot && (
+        <div className="text-center -mt-4 mb-4">
+          <button
+            onClick={() => onMapLocationChange(primaryLocation)}
+            className="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-lg hover:bg-teal-100 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors duration-200"
+          >
+            &larr; Back to {primaryLocation} Analysis
+          </button>
+        </div>
       )}
       
-      {data.populationTrend && data.populationTrend.length > 0 && (
+      {data.predictedHotspots && data.predictedHotspots.length > 0 && (
+        <PredictedHotspots hotspots={data.predictedHotspots} onViewHotspot={onMapLocationChange} />
+      )}
+      
+      {!isViewingHotspot && data.populationTrend && data.populationTrend.length > 0 && (
         <section>
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white mb-6 text-center">
-            Population Trend for {location}
+            Population Trend for {primaryLocation}
           </h2>
           <div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700">
             <PopulationChart data={data.populationTrend} />
@@ -96,7 +209,7 @@ const AnalysisPage: React.FC<{ data: GtaPopulationData, location: string, onLoca
         </section>
       )}
 
-      {data.urbanSprawlPredictions && data.urbanSprawlPredictions.length > 0 && (
+      {!isViewingHotspot && data.urbanSprawlPredictions && data.urbanSprawlPredictions.length > 0 && (
           <UrbanSprawlSection predictions={data.urbanSprawlPredictions} />
       )}
 
@@ -114,7 +227,8 @@ const AnalysisPage: React.FC<{ data: GtaPopulationData, location: string, onLoca
         </ul>
       </section>
     </div>
-);
+  );
+};
 
 
 // --- Helper Icons ---
@@ -129,6 +243,54 @@ const ChartIcon: React.FC<{ className?: string }> = ({ className }) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
   </svg>
 );
+
+const CityPlannerIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13v-6m0 6l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 16.382V5.618a1 1 0 00-1.447-.894L15 7m0 10v-6m0 0l-6-3" />
+    <circle cx="14" cy="9" r="3" />
+    <path d="M16 11l2 2" />
+  </svg>
+);
+
+const GovOfficialIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 21h18M5 21V10l7-5 7 5v11M9 21V10m6 0v11M2 10h20"/>
+  </svg>
+);
+
+const HomeownerIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 21V12h6v9" />
+  </svg>
+);
+
+const InvestorIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M2.5 19.5l5.5-5.5 4 4 8-8" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M17 5h5v5" />
+  </svg>
+);
+
+const EnvironmentalIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l-3.75 6A2.25 2.25 0 002.25 21h19.5a2.25 2.25 0 002.25-1.5l-3.75-6m-16.5 0a3 3 0 013-3h10.5a3 3 0 013 3m-16.5 0h16.5m-16.5 0v-2.25A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v2.25" />
+  </svg>
+);
+
+const InsuranceIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.62-3.749A11.95 11.95 0 0012 2.75z" />
+  </svg>
+);
+
+const PublicHealthIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0 7.22-9 12.75-9 12.75s-9-5.53-9-12.75A9 9 0 0112 3a9 9 0 019 5.25z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9" />
+  </svg>
+);
+
 
 const UrboIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg
@@ -221,7 +383,8 @@ const App: React.FC = () => {
   const [data, setData] = useState<GtaPopulationData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [location, setLocation] = useState<string>('Greater Toronto Area');
+  const [primaryLocation, setPrimaryLocation] = useState<string>('Greater Toronto Area');
+  const [mapLocation, setMapLocation] = useState<string>('Greater Toronto Area');
   const [page, setPage] = useState<Page>('intro');
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -245,11 +408,20 @@ const App: React.FC = () => {
   useEffect(() => {
     // Only fetch data if on analysis page. Intro page is static.
     if (page === 'analysis') {
-      fetchData(location);
+      fetchData(primaryLocation);
     } else {
         setIsLoading(false); // No loading needed for intro
     }
-  }, [location, page, fetchData]);
+  }, [primaryLocation, page, fetchData]);
+
+  const handlePrimaryLocationChange = (newLocation: string) => {
+    setPrimaryLocation(newLocation);
+    setMapLocation(newLocation);
+  };
+
+  const handleMapLocationChange = (newLocation: string) => {
+    setMapLocation(newLocation);
+  };
 
   const handleSendMessage = useCallback(async (message: string) => {
     setIsChatLoading(true);
@@ -277,8 +449,8 @@ const App: React.FC = () => {
       setPage(newPage);
       // Reset location to default when going to analysis from intro
       // and data for GTA hasn't been fetched yet
-      if (newPage === 'analysis' && location !== 'Greater Toronto Area' && !data) {
-          setLocation('Greater Toronto Area');
+      if (newPage === 'analysis' && primaryLocation !== 'Greater Toronto Area' && !data) {
+          handlePrimaryLocationChange('Greater Toronto Area');
       }
   }
 
@@ -295,9 +467,15 @@ const App: React.FC = () => {
             {page === 'analysis' && (
               <>
                 {isLoading && <LoadingSpinner />}
-                {error && <ErrorDisplay message={error} onRetry={() => fetchData(location)} />}
+                {error && <ErrorDisplay message={error} onRetry={() => fetchData(primaryLocation)} />}
                 {data && !isLoading && !error && (
-                  <AnalysisPage data={data} location={location} onLocationChange={setLocation} />
+                  <AnalysisPage 
+                    data={data} 
+                    primaryLocation={primaryLocation}
+                    mapLocation={mapLocation}
+                    onPrimaryLocationChange={handlePrimaryLocationChange}
+                    onMapLocationChange={handleMapLocationChange}
+                  />
                 )}
               </>
             )}

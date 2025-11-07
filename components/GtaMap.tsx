@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
 const majorGtaCities = [
   'Toronto',
@@ -31,8 +31,20 @@ const GtaMap: React.FC<GtaMapProps> = ({ location, onLocationChange }) => {
     onLocationChange(city);
   };
 
-  const initialQuery = 'Greater Toronto Area';
-  const zoomLevel = location.toLowerCase().includes(initialQuery.toLowerCase()) ? 9 : 12;
+  const zoomLevel = useMemo(() => {
+    const lowerCaseLocation = location.toLowerCase();
+    const majorCitiesLower = majorGtaCities.map(c => c.toLowerCase());
+
+    if (lowerCaseLocation === 'greater toronto area') {
+      return 9;
+    }
+    if (majorCitiesLower.includes(lowerCaseLocation)) {
+      return 12;
+    }
+    // Assume any other query is a specific address or hotspot
+    return 14;
+  }, [location]);
+
   const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(location)}&output=embed&z=${zoomLevel}`;
   
   return (
@@ -65,7 +77,11 @@ const GtaMap: React.FC<GtaMapProps> = ({ location, onLocationChange }) => {
             <button
               key={city}
               onClick={() => handleCityClick(city)}
-              className="px-3 py-1 text-sm bg-gray-100 dark:bg-slate-700/50 text-gray-700 dark:text-gray-300 rounded-full hover:bg-teal-100 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1 dark:focus:ring-offset-slate-800 transition-colors duration-200"
+              className={`px-3 py-1 text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1 dark:focus:ring-offset-slate-800 transition-all duration-300 ease-in-out ${
+                location === city
+                  ? 'bg-teal-500 text-white font-semibold shadow transform scale-105'
+                  : 'bg-gray-100 dark:bg-slate-700/50 text-gray-700 dark:text-gray-300 hover:bg-teal-100 dark:hover:bg-slate-600'
+              }`}
             >
               {city}
             </button>
