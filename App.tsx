@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { fetchGtaPopulationInfo, askChatbot } from './services/geminiService';
 import type { GtaPopulationData, PredictedHotspot } from './types';
@@ -346,33 +347,6 @@ const UrboIcon: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 
-// --- API Key Prompt ---
-const ApiKeyPrompt: React.FC = () => {
-    const WarningIcon: React.FC<{ className?: string }> = ({ className }) => (
-        <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-    );
-
-    return (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-80 z-50 flex items-center justify-center p-4 animate-fade-in" aria-modal="true" role="dialog">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-6 sm:p-8 text-center">
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/50">
-                    <WarningIcon className="h-7 w-7 text-yellow-500 dark:text-yellow-400" />
-                </div>
-                <h2 className="mt-4 text-2xl font-bold text-slate-800 dark:text-white">API Key Required</h2>
-                <p className="mt-2 text-base text-gray-600 dark:text-gray-300">
-                    Urbis requires a Google Gemini API key to function.
-                </p>
-                <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                    Please ensure the <strong>VITE_GOOGLE_API_KEY</strong> is correctly configured in your environment and then reload the page.
-                </p>
-            </div>
-        </div>
-    );
-};
-
-
 // --- Sidebar Component ---
 
 const Sidebar: React.FC<{ activePage: Page, setPage: (page: Page) => void, onOpenChat: () => void }> = ({ activePage, setPage, onOpenChat }) => {
@@ -426,7 +400,7 @@ const Sidebar: React.FC<{ activePage: Page, setPage: (page: Page) => void, onOpe
 
 const App: React.FC = () => {
   const [data, setData] = useState<GtaPopulationData | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [primaryLocation, setPrimaryLocation] = useState<string>('Greater Toronto Area');
   const [mapLocation, setMapLocation] = useState<string>('Greater Toronto Area');
@@ -434,23 +408,8 @@ const App: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [isChatLoading, setIsChatLoading] = useState<boolean>(false);
-  const [isApiKeyMissing, setIsApiKeyMissing] = useState<boolean>(false);
-
-  useEffect(() => {
-    // Check for API Key on initial load.
-    if (!process.env.VITE_GOOGLE_API_KEY) {
-      console.error("VITE_GOOGLE_API_KEY environment variable not set.");
-      setIsApiKeyMissing(true);
-      setIsLoading(false); // Stop loading if key is missing
-    }
-  }, []);
 
   const fetchData = useCallback(async (loc: string) => {
-    if (isApiKeyMissing) {
-        setError("API Key is not configured. Please set the VITE_GOOGLE_API_KEY environment variable and reload the page.");
-        setIsLoading(false);
-        return;
-    }
     setIsLoading(true);
     setError(null);
     setData(null); // Clear old data to prevent showing stale info
@@ -463,16 +422,16 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [isApiKeyMissing]);
+  }, []);
 
   useEffect(() => {
     // Only fetch data if on analysis page.
-    if (page === 'analysis' && !isApiKeyMissing) {
+    if (page === 'analysis') {
       fetchData(primaryLocation);
     } else {
-        setIsLoading(false); // No loading needed for intro or if key is missing
+        setIsLoading(false); // No loading needed for intro
     }
-  }, [primaryLocation, page, fetchData, isApiKeyMissing]);
+  }, [primaryLocation, page, fetchData]);
 
   const handlePrimaryLocationChange = (newLocation: string) => {
     setPrimaryLocation(newLocation);
@@ -485,12 +444,6 @@ const App: React.FC = () => {
 
   const handleSendMessage = useCallback(async (message: string) => {
     const userMessage: ChatMessage = { role: 'user', text: message };
-
-    if (isApiKeyMissing) {
-      const modelMessage: ChatMessage = { role: 'model', text: "I can't answer that without a configured API Key. Please ensure the VITE_GOOGLE_API_KEY is set in your environment and reload the application." };
-      setChatMessages(prev => [...prev, userMessage, modelMessage]);
-      return;
-    }
     
     setIsChatLoading(true);
     const updatedMessages: ChatMessage[] = [...chatMessages, userMessage];
@@ -511,7 +464,7 @@ const App: React.FC = () => {
     } finally {
       setIsChatLoading(false);
     }
-  }, [chatMessages, isApiKeyMissing]);
+  }, [chatMessages]);
 
   const handleSetPage = (newPage: Page) => {
       setPage(newPage);
@@ -524,7 +477,6 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-200 font-sans transition-colors duration-500">
-      {isApiKeyMissing && <ApiKeyPrompt />}
       <Sidebar activePage={page} setPage={handleSetPage} onOpenChat={() => setIsChatOpen(true)} />
       <div className="flex-1 flex flex-col max-h-screen overflow-y-auto">
         <Header title={page === 'intro' ? 'Welcome to Urbis' : (data?.title || 'Urban Growth Analysis')} />
